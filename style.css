@@ -1,60 +1,143 @@
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom right, #e3f2fd, #f3e5f5);
-  margin: 0;
-  padding: 0;
+const bureauName = document.getElementById("bureauName");
+const clientName = document.getElementById("clientName");
+const reportDate = document.getElementById("reportDate");
+const addCaseBtn = document.getElementById("addCaseBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+const exampleBtn = document.getElementById("exampleBtn");
+const casesContainer = document.getElementById("cases");
+const logoInput = document.getElementById("logoInput");
+const logoPreview = document.getElementById("logoPreview");
+
+let logoData = null;
+let cases = [];
+
+const stages = [
+  "Dava Açılması Aşaması",
+  "Dilekçe Hazırlık",
+  "Cevap Dilekçesi Bekleniyor",
+  "Delil Toplama",
+  "Bilirkişi İncelemesi",
+  "Duruşma Aşaması",
+  "Karar Bekleniyor",
+  "Temyiz Aşaması",
+  "Kesinleşti",
+  "İcra Aşaması",
+  "Sonuçlandı",
+];
+
+function renderCases() {
+  casesContainer.innerHTML = "";
+  cases.forEach((c, i) => {
+    const div = document.createElement("div");
+    div.className = "case";
+    div.innerHTML = `
+      <button class="remove-btn" onclick="removeCase(${i})">Sil</button>
+      <p><b>Dosya ${i + 1}</b></p>
+      <label>Karşı Taraf *</label>
+      <input value="${c.opponent}" oninput="updateCase(${i}, 'opponent', this.value)" />
+      <label>Dosya No</label>
+      <input value="${c.fileNo}" oninput="updateCase(${i}, 'fileNo', this.value)" />
+      <label>Konu *</label>
+      <input value="${c.title}" oninput="updateCase(${i}, 'title', this.value)" />
+      <label>Aşama *</label>
+      <select onchange="updateCase(${i}, 'stage', this.value)">
+        <option value="">Seçiniz</option>
+        ${stages.map(s => `<option ${c.stage===s?"selected":""}>${s}</option>`).join("")}
+      </select>
+      <label>Özet *</label>
+      <textarea rows="3" oninput="updateCase(${i}, 'summary', this.value)">${c.summary}</textarea>
+    `;
+    casesContainer.appendChild(div);
+  });
+  checkForm();
 }
 
-.container {
-  max-width: 700px;
-  margin: 40px auto;
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  padding: 30px;
-  text-align: center;
+function addCase() {
+  cases.push({ opponent: "", fileNo: "", title: "", stage: "", summary: "" });
+  renderCases();
 }
 
-h1 {
-  color: #333;
+function removeCase(i) {
+  cases.splice(i, 1);
+  renderCases();
 }
 
-textarea {
-  width: 100%;
-  height: 200px;
-  margin: 20px 0;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  resize: none;
+function updateCase(i, field, value) {
+  cases[i][field] = value;
+  checkForm();
 }
 
-.btn-container {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
+function checkForm() {
+  const valid = clientName.value && cases.every(c => c.opponent && c.title && c.stage && c.summary);
+  downloadBtn.disabled = !valid;
 }
 
-button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
+function fillExample() {
+  bureauName.value = "Yılmaz & Ortakları Hukuk Bürosu";
+  clientName.value = "Mehmet Demir";
+  reportDate.valueAsDate = new Date();
+  cases = [
+    { opponent: "ABC İnşaat A.Ş.", fileNo: "2024/156", title: "İşçilik Alacağı Davası", stage: "Duruşma Aşaması", summary: "Tanıklar dinlendi, rapor lehimize." },
+    { opponent: "Ayşe Yılmaz", fileNo: "2023/892", title: "Tapu İptali", stage: "Karar Bekleniyor", summary: "Karar 2 hafta içinde bekleniyor." }
+  ];
+  renderCases();
 }
 
-button:hover {
-  background-color: #0056b3;
+function handleLogoUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    logoData = reader.result;
+    logoPreview.src = logoData;
+    logoPreview.style.display = "block";
+  };
+  reader.readAsDataURL(file);
 }
 
-.preview {
-  margin-top: 30px;
-  text-align: left;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #fafafa;
+function groupCases() {
+  const grouped = {};
+  cases.forEach(c => {
+    const key = c.opponent || "Belirtilmemiş";
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(c);
+  });
+  return grouped;
 }
+
+function downloadPDF() {
+  const grouped = groupCases();
+  const html = `
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="UTF-8"><title>${clientName.value} - Rapor</title></head>
+<body style="font-family:Arial;padding:20px;">
+<h2>${bureauName.value || "Hukuk Bürosu"}</h2>
+${logoData ? `<img src="${logoData}" style="max-height:80px;">` : ""}
+<h3>Müvekkil: ${clientName.value}</h3>
+<p>Tarih: ${new Date(reportDate.value || new Date()).toLocaleDateString("tr-TR")}</p>
+${Object.entries(grouped).map(([op, arr]) => `
+<h4>${op} (${arr.length} dosya)</h4>
+${arr.map(a=>`
+<div style="border:1px solid #ccc;padding:10px;margin:8px 0;">
+<b>${a.title}</b><br>
+No: ${a.fileNo}<br>
+Aşama: ${a.stage}<br>
+${a.summary}
+</div>`).join("")}
+`).join("")}
+</body></html>`;
+  const blob = new Blob([html], {type:"text/html"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `dosya-raporu-${clientName.value.replace(/\s+/g,"-")}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+  alert("HTML indirildi. Tarayıcıda açıp PDF olarak kaydedebilirsiniz (Ctrl+P).");
+}
+
+addCaseBtn.onclick = addCase;
+downloadBtn.onclick = downloadPDF;
+exampleBtn.onclick = fillExample;
+logoInput.onchange = handleLogoUpload;
+clientName.oninput = checkForm;
