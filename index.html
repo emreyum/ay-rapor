@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yapay Zeka PDF Uygulaması</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Yapay Zeka PDF Uygulaması</h1>
+
+    <textarea id="textInput" placeholder="Metni buraya yaz..."></textarea>
+
+    <div class="btn-container">
+      <button id="generateBtn">PDF Oluştur</button>
+      <button id="clearBtn">Temizle</button>
+    </div>
+
+    <div id="preview" class="preview">
+      <h2>Önizleme</h2>
+      <div id="content"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
