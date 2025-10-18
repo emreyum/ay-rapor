@@ -3,27 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Yapay Zeka PDF Uygulaması</title>
+  <title>Dosya Rapor Sistemi</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script defer src="script.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1>Yapay Zeka PDF Uygulaması</h1>
+    <h1>Dosya Rapor Sistemi</h1>
 
-    <textarea id="textInput" placeholder="Metni buraya yaz..."></textarea>
-
-    <div class="btn-container">
-      <button id="generateBtn">PDF Oluştur</button>
-      <button id="clearBtn">Temizle</button>
+    <div class="section">
+      <label>Büro Adı</label>
+      <input id="bureauName" type="text" placeholder="Örn: Yılmaz Hukuk Bürosu" />
     </div>
 
-    <div id="preview" class="preview">
-      <h2>Önizleme</h2>
-      <div id="content"></div>
+    <div class="section">
+      <label>Müvekkil Adı *</label>
+      <input id="clientName" type="text" placeholder="Örn: Ali Veli" />
     </div>
+
+    <div class="section">
+      <label>Rapor Tarihi</label>
+      <input id="reportDate" type="date" />
+    </div>
+
+    <div class="section">
+      <label>Büro Logosu (isteğe bağlı)</label>
+      <input id="logoInput" type="file" accept="image/*" />
+      <img id="logoPreview" style="display:none; max-height:80px; margin-top:8px;" />
+    </div>
+
+    <div id="cases"></div>
+
+    <button id="addCaseBtn">Yeni Dosya Ekle</button>
+    <button id="downloadBtn" disabled>Raporu İndir</button>
+    <button id="exampleBtn">Örnek Veri Doldur</button>
+
+    <p class="info">* işaretli alanlar zorunludur.</p>
   </div>
-
-  <script src="script.js"></script>
 </body>
 </html>
