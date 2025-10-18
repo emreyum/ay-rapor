@@ -1,34 +1,79 @@
-const textInput = document.getElementById("textInput");
-const generateBtn = document.getElementById("generateBtn");
-const clearBtn = document.getElementById("clearBtn");
-const content = document.getElementById("content");
+body {
+  font-family: Arial, sans-serif;
+  background: #eef2ff;
+  margin: 0;
+  padding: 20px;
+}
 
-textInput.addEventListener("input", () => {
-  content.innerText = textInput.value;
-});
+.container {
+  max-width: 800px;
+  margin: auto;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
 
-generateBtn.addEventListener("click", () => {
-  const text = textInput.value.trim();
-  if (!text) {
-    alert("Lütfen metin girin.");
-    return;
-  }
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-  const pdfElement = document.createElement("div");
-  pdfElement.innerHTML = `<h2>Yapay Zeka Çıktısı</h2><p style="white-space: pre-wrap;">${text}</p>`;
+.section {
+  margin-bottom: 15px;
+}
 
-  const opt = {
-    margin: 10,
-    filename: "cikti.pdf",
-    image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-  };
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
 
-  html2pdf().set(opt).from(pdfElement).save();
-});
+input, textarea, select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
 
-clearBtn.addEventListener("click", () => {
-  textInput.value = "";
-  content.innerText = "";
-});
+button {
+  margin: 6px;
+  padding: 10px 14px;
+  border: none;
+  background: #1e3a8a;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2e4fb3;
+}
+
+.case {
+  border-left: 4px solid #1e3a8a;
+  padding: 10px;
+  background: #f9fafb;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+.remove-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  float: right;
+  cursor: pointer;
+}
+
+.remove-btn:hover {
+  background: #b91c1c;
+}
+
+.info {
+  font-size: 0.9em;
+  color: #555;
+}
+
